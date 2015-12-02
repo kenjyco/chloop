@@ -43,7 +43,10 @@ class GetCharLoop(object):
         self._prompt = prompt
         self._redis = redis_client or REDIS
 
-        self._DONT_LOG_CMDS = ['help']
+        self._DONT_LOG_CMDS = [
+            'errors', 'help', 'history', 'indicies', 'session_keys',
+            'session_notes'
+        ]
 
         # Setup some things that Redis will use
         if self._keyprefix:
