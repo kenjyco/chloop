@@ -100,7 +100,7 @@ class GetCharLoop(object):
             use_time=True,
             redis_client=self._redis)
 
-    def _redis_sessionkeys(self, display=False):
+    def session_keys(self, display=True):
         """Display/return a list of keys (and their types) created for this session
         
         This is not every key in Redis that starts with `self._base_keyname`.
@@ -116,8 +116,8 @@ class GetCharLoop(object):
             pprint(sessionkeys)
         return sessionkeys
 
-    def _redis_indices(self, display=False):
-        """Display/return a list of indicies (and their types)
+    def indicies(self, display=True):
+        """Display/return a list of Redis indicies (and their types)
         
         These are indicies created by the `redis_helper.index_hash_field`
         function for Python dicts added to Redis.
@@ -131,8 +131,8 @@ class GetCharLoop(object):
             pprint(indicies)
         return indicies
 
-    def _format_session_notes(self, key=None, time_format='%Y_%m%d-%a-%H%M%S',
-                              display=False):
+    def session_notes(self, key=None, time_format='%Y_%m%d-%a-%H%M%S',
+                              display=True):
         """Return a string containing any notes made for GetCharLoop session 'key'
 
         - key: a Redis key to a sorted set containing notes (added by the '-'
@@ -156,7 +156,7 @@ class GetCharLoop(object):
                 print text
         return text
     
-    def _display_history(self):
+    def history(self):
         """Display command history for current session"""
         print 'Command history for {}'.format(repr(self._base_keyname))
         k = '{}{}cmd_results*[0-9]'.format(self._base_keyname, self._keysep)
@@ -165,7 +165,7 @@ class GetCharLoop(object):
             print key
             pprint(self._redis.hgetall(key))
 
-    def _display_error(self):
+    def errors(self):
         """Display command errors for current session"""
         print 'Command errors for {}'.format(repr(self._base_keyname))
         k = '{}{}error*[0-9]'.format(self._base_keyname, self._keysep)
