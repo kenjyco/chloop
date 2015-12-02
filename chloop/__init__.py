@@ -44,7 +44,7 @@ class GetCharLoop(object):
         self._redis = redis_client or REDIS
 
         self._DONT_LOG_CMDS = [
-            'errors', 'help', 'history', 'indicies', 'session_keys',
+            'errors', 'help', 'history', 'indices', 'session_keys',
             'session_notes'
         ]
 
@@ -119,20 +119,20 @@ class GetCharLoop(object):
             pprint(sessionkeys)
         return sessionkeys
 
-    def indicies(self, display=True):
-        """Display/return a list of Redis indicies (and their types)
+    def indices(self, display=True):
+        """Display/return a list of Redis indices (and their types)
         
-        These are indicies created by the `redis_helper.index_hash_field`
+        These are indices created by the `redis_helper.index_hash_field`
         function for Python dicts added to Redis.
         """
-        indicies = [
+        indices = [
             {'type': self._redis.type(key), 'key': key}
             for key in self._redis.scan_iter(self._indexpattern)
         ]
         if display:
-            print 'Redis indicies'
-            pprint(indicies)
-        return indicies
+            print 'Redis indices'
+            pprint(indices)
+        return indices
 
     def session_notes(self, key=None, time_format='%Y_%m%d-%a-%H%M%S',
                               display=True):
