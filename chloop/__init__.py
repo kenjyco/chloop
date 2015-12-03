@@ -4,7 +4,6 @@ import sys
 import time
 import traceback
 from cStringIO import StringIO
-from datetime import datetime
 from functools import partial
 from pprint import pprint
 
@@ -231,7 +230,7 @@ class GetCharLoop(object):
                         self._redis_add('cmd_results', info, indexfields=['cmd'])
                 except:
                     etype, evalue, tb = sys.exc_info()
-                    now = datetime.now()
+                    epoch = time.time()
                     info = {
                         'traceback_string': traceback.format_exc(),
                         'error_type': repr(etype),
@@ -241,7 +240,10 @@ class GetCharLoop(object):
                         'func_module': getattr(cmd_func, '__module__', ''),
                         'func_args': repr(args),
                         'fqdn': socket.getfqdn(),
-                        'time_string': now.strftime('%Y_%m%d-%a-%H%M%S')
+                        'time_epoch': epoch,
+                        'time_string': time.strftime(
+                            '%Y_%m%d-%a-%H%M%S', time.localtime(epoch)
+                        )
                     }
                     print '=' * 70
                     print info['traceback_string']
