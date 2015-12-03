@@ -191,12 +191,13 @@ class GetCharLoop(object):
                 print ch
                 self._chfunc_dict[ch][0]()
             elif ch == '-':
+                epoch = time.time()
                 try:
                     user_input = click.prompt(text='', prompt_suffix='- ')
                 except click.exceptions.Abort:
                     print
                     continue
-                self._redis.zadd(self._session_notes_key, time.time(), user_input)
+                self._redis.zadd(self._session_notes_key, epoch, user_input)
             elif ch == ':':
                 try:
                     user_input = click.prompt(text='', prompt_suffix=':')
