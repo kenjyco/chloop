@@ -251,7 +251,12 @@ class GetCharLoop(object):
                     print 'cmd: {}\nargs: {}'.format(repr(cmd), repr(args))
                     self._redis_add('error', info, indexfields=['func', 'error_type'])
             else:
-                print repr(ch), ord(ch)
+                try:
+                    print repr(ch), ord(ch)
+                except TypeError:
+                    # ord() expected a character, but string of length 2 found
+                    #   - happens if you press 'Esc' before another key
+                    print repr(ch)
 
     def ipdb(self):
         """Start ipdb (debugger). To continue back to the input loop, use 'c'
