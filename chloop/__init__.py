@@ -283,11 +283,7 @@ class GetCharLoop(object):
             class_doc = super(self.__class__, self).__doc__
         fp.write(class_doc + '\n')
 
-        # Print in order of longest docstring
-        for method, docstring in sorted(
-            method_docs.iteritems(),
-            lambda x, y: cmp(len(y[1]), len(x[1]))
-        ):
+        for method, docstring in sorted(method_docs.iteritems()):
             if docstring:
                 fp.write('.:: {} ::.\n{}\n\n'.format(method, docstring.strip()))
             else:
