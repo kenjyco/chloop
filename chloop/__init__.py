@@ -183,7 +183,7 @@ class GetCharLoop(object):
 
     def __call__(self):
         while True:
-            click.secho(self._prompt, nl=False)
+            click.secho(self._prompt, nl=False, fg='cyan', bold=True)
             try:
                 ch = click.getchar()
             except (EOFError, KeyboardInterrupt):
