@@ -23,9 +23,11 @@ class GetCharLoop(object):
         - the function bound to `:command` should accept `*args` only
     - '-' to receive an input line from user (a note)
     """
-    def __init__(self, chfunc_dict={}, sep=':', prefix='', prompt='\n> ',
-                 redis_client=None):
+    def __init__(self, *args, **kwargs):
         """
+
+        kwargs:
+
         - chfunc_dict: a dictionary where keys are characters and values are
           2-item tuples
             - first item is a function accepting no arguments
@@ -36,11 +38,11 @@ class GetCharLoop(object):
         - prompt: string to display when asking for input
         - redis_client: an object returned by `redis.StrictRedis()`
         """
-        self._chfunc_dict = chfunc_dict
-        self._keysep = sep
-        self._keyprefix = prefix
-        self._prompt = prompt
-        self._redis = redis_client or REDIS
+        self._chfunc_dict = kwargs.pop('chfunc_dict', {})
+        self._keysep = kwargs.pop('sep', ':')
+        self._keyprefix = kwargs.pop('prefix', '')
+        self._prompt = kwargs.pop('prompt', '\n> ')
+        self._redis = kwargs.pop('redis_client', REDIS)
 
         self._DONT_LOG_CMDS = [
             'errors', 'help', 'history', 'indices', 'session_keys',
