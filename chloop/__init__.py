@@ -271,6 +271,16 @@ class GetCharLoop(object):
         # This function is actually never called, only added for the docstring
         pass
 
+    def _class_doc(self):
+        """Return a cumulative docstring for class and parent classes"""
+        docs = []
+        for cls in inspect.getmro(self.__class__):
+            docs.append(cls.__doc__ or '')
+            if cls.__name__ == 'GetCharLoop':
+                break
+        docs = reversed([d.strip() for d in docs if d])
+        return '\n\n'.join(docs) + '\n'
+
     def help(self, *args):
         """Print/return the docstrings of methods defined on this class"""
         method_docs = {
@@ -280,9 +290,7 @@ class GetCharLoop(object):
 
         fp = StringIO()
         fp.write('=' * 70 + '\n')
-        class_doc = self.__class__.__doc__
-        if not class_doc:
-            class_doc = super(self.__class__, self).__doc__
+        class_doc = self._class_doc()
         fp.write(class_doc + '\n')
 
         for method, docstring in sorted(method_docs.iteritems()):
