@@ -49,6 +49,15 @@ class GetCharLoop(object):
             'session_notes'
         ]
 
+        self._method_names = [
+            m[0]
+            for m in inspect.getmembers(self) if not m[0].startswith('_')
+        ]
+        self._method_docs = {
+            method: getattr(self, method).__doc__ or ''
+            for method in self._method_names
+        }
+
         # Setup some things that Redis will use
         if self._keyprefix:
             self._base_keyname = next_object_id(
@@ -281,19 +290,14 @@ class GetCharLoop(object):
         docs = reversed([d.strip() for d in docs if d])
         return '\n\n'.join(docs) + '\n'
 
-    def help(self, *args):
+    def docstrings(self, *args):
         """Print/return the docstrings of methods defined on this class"""
-        method_docs = {
-            m[0]: getattr(self, m[0]).__doc__ or ''
-            for m in inspect.getmembers(self) if not m[0].startswith('_')
-        }
-
         fp = StringIO()
         fp.write('=' * 70 + '\n')
         class_doc = self._class_doc()
         fp.write(class_doc + '\n')
 
-        for method, docstring in sorted(method_docs.iteritems()):
+        for method, docstring in sorted(self._method_docs.iteritems()):
             if docstring:
                 fp.write('.:: {} ::.\n{}\n\n'.format(method, docstring.strip()))
             else:
