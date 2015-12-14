@@ -11,6 +11,6 @@ setup(
     install_requires=[
         'click>=5.0,<6.0',
         'ipdb>=0.8,<1.0',
-        'redis-helper',
+        'redis-helper>=0.1',
     ],
 )
