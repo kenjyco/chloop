@@ -45,8 +45,8 @@ class GetCharLoop(object):
         self._redis = kwargs.pop('redis_client', REDIS)
 
         self._DONT_LOG_CMDS = [
-            'errors', 'help', 'history', 'indices', 'session_keys',
-            'session_notes'
+            'docstrings', 'errors', 'history', 'indices', 'session_keys',
+            'session_notes', 'shortcuts'
         ]
 
         self._method_names = [
@@ -300,6 +300,13 @@ class GetCharLoop(object):
             else:
                 fp.write('.:: {} (no docs) ::.\n\n'.format(method))
 
+        text = fp.getvalue()
+        print text
+        return text
+
+    def shortcuts(self, *args):
+        """Print/return any hotkey shortcuts defined on this class"""
+        fp = StringIO()
         if self._chfunc_dict:
             for ch in sorted(self._chfunc_dict.iterkeys()):
                 line = '{} -- {}\n'.format(repr(ch), self._chfunc_dict[ch][1])
