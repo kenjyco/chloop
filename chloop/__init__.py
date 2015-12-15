@@ -112,7 +112,7 @@ class GetCharLoop(object):
 
     def session_keys(self, display=True):
         """Display/return a list of keys (and their types) created for this session
-        
+
         This is not every key in Redis that starts with `self._base_keyname`.
         The key names that end in a number are considered to be actual data that
         a user might care about (i.e. excluding '*next_id' keys).
@@ -128,7 +128,7 @@ class GetCharLoop(object):
 
     def indices(self, display=True):
         """Display/return a list of Redis indices (and their types)
-        
+
         These are indices created by the `redis_helper.index_hash_field`
         function for Python dicts added to Redis.
         """
@@ -165,7 +165,7 @@ class GetCharLoop(object):
             if text:
                 print text
         return text
-    
+
     def history(self):
         """Display command history for current session"""
         print 'Command history for {}'.format(repr(self._base_keyname))
