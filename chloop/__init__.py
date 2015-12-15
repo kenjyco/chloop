@@ -86,9 +86,6 @@ class GetCharLoop(object):
             self._base_keyname,
             self._keysep
         )
-        print '{} -> base Redis key for input session'.format(
-            repr(self._base_keyname)
-        )
 
     def _redis_fullkey(self, keypart):
         """Given a specific part of a new Redis key, create/return the fullkey"""
