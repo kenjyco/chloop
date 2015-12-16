@@ -1,3 +1,3 @@
-git+git://github.com/kenjyco/redis_helper.git
+redis-helper>=0.1
 click>=5.0,<6.0
 ipdb>=0.8,<1.0
