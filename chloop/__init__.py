@@ -311,7 +311,7 @@ class GetCharLoop(object):
         """Print/return any hotkey shortcuts defined on this class"""
         fp = StringIO()
         if self._chfunc_dict:
-            for ch in sorted(self._chfunc_dict.iterkeys()):
+            for ch in sorted(self._chfunc_dict.keys()):
                 line = '{} -- {}\n'.format(repr(ch), self._chfunc_dict[ch][1])
                 fp.write(line)
 
