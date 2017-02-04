@@ -3,7 +3,7 @@ import socket
 import sys
 import time
 import traceback
-from cStringIO import StringIO
+from io import StringIO
 from functools import partial
 from pprint import pprint
 
@@ -122,7 +122,7 @@ class GetCharLoop(object):
             for key in self._redis.scan_iter(self._base_keyname + '*[0-9]')
         ]
         if display:
-            print 'Redis keys for {}'.format(repr(self._base_keyname))
+            print('Redis keys for {}'.format(repr(self._base_keyname)))
             pprint(sessionkeys)
         return sessionkeys
 
@@ -137,7 +137,7 @@ class GetCharLoop(object):
             for key in self._redis.scan_iter(self._indexpattern)
         ]
         if display:
-            print 'Redis indices'
+            print('Redis indices')
             pprint(indices)
         return indices
 
@@ -161,31 +161,31 @@ class GetCharLoop(object):
 
         text = fp.getvalue()
         if display:
-            print 'Notes for {}'.format(repr(key))
+            print('Notes for {}'.format(repr(key)))
             if text:
-                print text
+                print(text)
         return text
 
     def history(self):
         """Display command history for current session"""
-        print 'Command history for {}'.format(repr(self._base_keyname))
+        print('Command history for {}'.format(repr(self._base_keyname)))
         k = '{}{}cmd_results*[0-9]'.format(self._base_keyname, self._keysep)
         for key in self._redis.scan_iter(k):
-            print '\n' + '~' * 70
-            print key
+            print('\n' + '~' * 70)
+            print(key)
             pprint(self._redis.hgetall(key))
 
     def errors(self):
         """Display command errors for current session"""
-        print 'Command errors for {}'.format(repr(self._base_keyname))
+        print('Command errors for {}'.format(repr(self._base_keyname)))
         k = '{}{}error*[0-9]'.format(self._base_keyname, self._keysep)
         for key in self._redis.scan_iter(k):
-            print '~' * 70
-            print key
+            print('~' * 70)
+            print(key)
             data = self._redis.hgetall(key)
             traceback = data.pop('traceback_string')
             pprint(data)
-            print '\n{}'.format(traceback)
+            print('\n{}'.format(traceback))
 
     def __call__(self):
         while True:
@@ -194,23 +194,26 @@ class GetCharLoop(object):
                 ch = click.getchar()
             except (EOFError, KeyboardInterrupt):
                 break
+            else:
+                if ch in ['\x03','\x04']:
+                    break
 
             if ch in self._chfunc_dict:
-                print ch
+                print(ch)
                 self._chfunc_dict[ch][0]()
             elif ch == '-':
                 epoch = time.time()
                 try:
                     user_input = click.prompt(text='', prompt_suffix='- ')
                 except click.exceptions.Abort:
-                    print
+                    print()
                     continue
                 self._redis.zadd(self._session_notes_key, epoch, user_input)
             elif ch == ':':
                 try:
                     user_input = click.prompt(text='', prompt_suffix=':')
                 except click.exceptions.Abort:
-                    print
+                    print()
                     continue
                 cmd = user_input.split()[0]
                 args = user_input.split()[1:]
@@ -225,7 +228,7 @@ class GetCharLoop(object):
                     else:
                         cmd_func = getattr(self, cmd)
                 except AttributeError:
-                    print 'invalid command'
+                    print('invalid command')
                     continue
 
                 try:
@@ -254,17 +257,17 @@ class GetCharLoop(object):
                             '%Y_%m%d-%a-%H%M%S', time.localtime(epoch)
                         )
                     }
-                    print '=' * 70
-                    print info['traceback_string']
-                    print 'cmd: {}\nargs: {}'.format(repr(cmd), repr(args))
+                    print('=' * 70)
+                    print(info['traceback_string'])
+                    print('cmd: {}\nargs: {}'.format(repr(cmd), repr(args)))
                     self._redis_add('error', info, indexfields=['func', 'error_type'])
             else:
                 try:
-                    print repr(ch), ord(ch)
+                    print(repr(ch), ord(ch))
                 except TypeError:
                     # ord() expected a character, but string of length 2 found
                     #   - happens if you press 'Esc' before another key
-                    print repr(ch)
+                    print(repr(ch))
 
     def ipdb(self):
         """Start ipdb (debugger). To continue back to the input loop, use 'c'
@@ -294,24 +297,24 @@ class GetCharLoop(object):
         class_doc = self._class_doc()
         fp.write(class_doc + '\n')
 
-        for method, docstring in sorted(self._method_docs.iteritems()):
+        for method, docstring in sorted(self._method_docs.items()):
             if docstring:
                 fp.write('.:: {} ::.\n{}\n\n'.format(method, docstring.strip()))
             else:
                 fp.write('.:: {} (no docs) ::.\n\n'.format(method))
 
         text = fp.getvalue()
-        print text
+        print(text)
         return text
 
     def shortcuts(self, *args):
         """Print/return any hotkey shortcuts defined on this class"""
         fp = StringIO()
         if self._chfunc_dict:
-            for ch in sorted(self._chfunc_dict.iterkeys()):
+            for ch in sorted(self._chfunc_dict.keys()):
                 line = '{} -- {}\n'.format(repr(ch), self._chfunc_dict[ch][1])
                 fp.write(line)
 
         text = fp.getvalue()
-        print text
+        print(text)
         return text
