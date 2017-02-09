@@ -6,9 +6,7 @@ A Redis-backed REPL that saves command history, output, & errors.
 ## Install
 
 ```
-% virtualenv env
-% env/bin/pip install git+git://github.com/kenjyco/chloop.git
-% source env/bin/activate
+% pip3 install chloop
 ```
 
 The `GetCharLoop` class is provided by the `chloop` package. Calling an
@@ -28,11 +26,9 @@ arguments you need to pass to that command.
 
 - `:docstrings` to view docstrings of methods defined on the class
 - `:errors` to view colon commands that raised exceptions
-- `:history` view colon commands issued during this session
-- `:indices` to show all Redis indicies (for fields of hashes)
-- `:ipdb` to start an ipdb session (debugging/inspection)
-- `:session_keys` to show Redis keys for current session
-- `:session_notes` to view notes created in current session
+- `:history` view colon commands issued
+- `:pdb` to start a pdb session (debugging/inspection)
+- `:ipython` to start ipython shell
 - `:shortcuts` to view hotkey shortcuts
 
 Any methods added to your sub-class of `GetCharLoop` are callable as **colon
@@ -45,8 +41,6 @@ method name to the end of the `self._DONT_LOG_CMDS` list.
 #### The dash
 
 Hitting the `-` key at the prompt will allow you to type a note.
-
-> Use the `:session_notes` command to view any notes added, with timestamps.
 
 #### Other keys
 
@@ -66,7 +60,96 @@ To add new hotkey shortcuts, update the `self._chfunc_dict` object in the
 > Use `functools.partial` (if necessary) to create a callable accepting no
 > arguments.
 
-## Example
+## Basic example
+
+```
+% python3 -c 'from chloop import GetCharLoop; GetCharLoop()()'
+
+> :docstrings
+======================================================================
+Loop forever, receiving character input from user and performing actions
+
+    - ^d or ^c to break the loop
+    - ':' to enter a command (and any arguments)
+        - the name of the command should be monkeypatched on the GetCharLoop
+          instance, or be a defined method on a GetCharLoop sub-class
+        - the function bound to `:command` should accept `*args` only
+    - '-' to receive an input line from user (a note)
+
+.:: docstrings ::.
+Print/return the docstrings of methods defined on this class
+
+.:: errors ::.
+Print/return any colon commands that raised exceptions (w/ traceback)
+
+.:: history ::.
+Print/return colon commands used
+
+.:: ipython ::.
+Start ipython shell. To continue back to the input loop, use 'ctrl + d'
+
+.:: pdb ::.
+Start pdb (debugger). To continue back to the input loop, use 'c'
+
+.:: shortcuts ::.
+Print/return any hotkey shortcuts defined on this class
+
+
+
+> :pdb
+[10] > /tmp/ch/venv/lib/python3.5/site-packages/chloop/__init__.py(90)__call__()
+-> continue
+(Pdb++) l
+ 85                     cmd = user_input.split()[0]
+ 86                     args = user_input.split()[1:]
+ 87
+ 88                     if cmd == 'pdb':
+ 89                         import pdb; pdb.set_trace()
+ 90  ->                     continue
+ 91
+ 92                     if cmd == 'ipython':
+ 93                         from IPython import embed; embed()
+ 94                         continue
+ 95
+(Pdb++) self.collection
+Collection('chloop-log', 'default', index_fields='cmd,status,error_type', json_fields='args,value')
+(Pdb++) self.collection.keyspace
+[]
+(Pdb++) c
+
+> :ipython
+Python 3.5.1+ (default, Mar 30 2016, 22:46:26)
+Type "copyright", "credits" or "license" for more information.
+
+IPython 5.2.2 -- An enhanced Interactive Python.
+?         -> Introduction and overview of IPython's features.
+%quickref -> Quick reference.
+help      -> Python's own help system.
+object?   -> Details about 'object', use 'object??' for extra details.
+
+
+In [1]: self.collection
+Out[1]: Collection('chloop-log', 'default', index_fields='cmd,status,error_type', json_fields='args,value')
+
+In [2]: self.shortcuts
+Out[2]: <bound method GetCharLoop.shortcuts of <chloop.GetCharLoop object at 0x7f9f8ff5f5f8>>
+
+In [3]: self.docstrings
+Out[3]: <bound method GetCharLoop.docstrings of <chloop.GetCharLoop object at 0x7f9f8ff5f5f8>>
+
+In [4]:
+Do you really want to exit ([y]/n)? y
+
+
+> :shortcuts
+
+
+> - there are no shortcuts defined by default
+
+>
+```
+
+## Example (sub-class)
 
 #### Import `GetCharLoop` and sub-class it
 
@@ -87,14 +170,10 @@ class Mine(GetCharLoop):
 
         # Add some single-key shorcuts that call methods on `self`
         self._chfunc_dict.update({
-            'k': (partial(self.session_keys, display=True),
-                  'show redis keys for current session'),
-            'n': (partial(self.session_notes, display=True),
-                  'show notes for current session'),
             'h': (self.history,
-                  'display command history for current session'),
+                  'display recent command history'),
             'e': (self.errors,
-                  'display errors for current session'),
+                  'display recent errors'),
         })
 
     def somefunc(self, *args):
@@ -112,7 +191,7 @@ class Mine(GetCharLoop):
 
 ```
 if __name__ == '__main__':
-    m = Mine(prefix='myrediskeyspace', prompt='\nmyprompt> ')
+    m = Mine(prompt='\nmyprompt> ')
     m()
 ```
 
@@ -127,19 +206,8 @@ myprompt> :somefunc here are some args
 u'here are some args'
 
 myprompt> :shortcuts
-'e' -- display errors for current session
-'h' -- display command history for current session
-'k' -- show redis keys for current session
-'n' -- show notes for current session
-
-myprompt> h
-Command history for 'myrediskeyspace:Mine:1000'
-
-----------------------------------------------------------------------
-myrediskeyspace:Mine:1000:cmd_results:1000
-{'args': "[u'here', u'are', u'some', u'args']",
- 'cmd': 'somefunc',
- 'value': 'here are some args'}
+'e' -- display recent errors
+'h' -- display recent command history
 
 myprompt> :lame
 ======================================================================
@@ -153,60 +221,15 @@ ZeroDivisionError: integer division or modulo by zero
 cmd: u'lame'
 args: []
 
-myprompt> :ipdb
-> /home/ken/chloop/chloop/__init__.py(220)__call__()
-    219                     import ipdb; ipdb.set_trace()
---> 220                     continue
-    221
-
-ipdb> self.thing
-'some default value'
-
-ipdb> pp self._redis.hgetall('myrediskeyspace:Mine:1000:error:1000')
-{'error_type': "<type 'exceptions.ZeroDivisionError'>",
- 'error_value': "ZeroDivisionError('integer division or modulo by zero',)",
- 'fqdn': 'kenjyco',
- 'func': 'lame',
- 'func_args': '[]',
- 'func_doc': 'raise exception',
- 'func_module': '__main__',
- 'time_epoch': '1451362157.572994',
- 'time_string': '2015_1228-Mon-220917',
- 'traceback_string': 'Traceback (most recent call last):\n  File "/home/ken/chloop/chloop/__init__.py", line 220, in __call__\n    continue\n  File "main2.py", line 35, in lame\n    return 1/0\nZeroDivisionError: integer division or modulo by zero\n'}
-ipdb>
-ipdb> c
+myprompt> :pdb
+...
 
 myprompt> e
-Command errors for 'myrediskeyspace:Mine:1000'
-----------------------------------------------------------------------
-myrediskeyspace:Mine:1000:error:1000
-{'error_type': "<type 'exceptions.ZeroDivisionError'>",
- 'error_value': "ZeroDivisionError('integer division or modulo by zero',)",
- 'fqdn': 'kenjyco',
- 'func': 'lame',
- 'func_args': '[]',
- 'func_doc': 'raise exception',
- 'func_module': '__main__',
- 'time_epoch': '1451362157.572994',
- 'time_string': '2015_1228-Mon-220917'}
-
-Traceback (most recent call last):
-  File "/home/ken/chloop/chloop/__init__.py", line 220, in __call__
-    continue
-  File "main.py", line 35, in lame
-    return 1/0
-ZeroDivisionError: integer division or modulo by zero
-
+(errors output)
 
 myprompt> - here is a note
 
 myprompt> - here is another note
-
-myprompt> n
-Notes for 'myrediskeyspace:Mine:1000:notes0'
-- 2015_1228-Mon-223345: here is a note
-- 2015_1228-Mon-223350: here is another note
-
 
 myprompt>
 ```

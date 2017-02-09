@@ -1,3 +1,4 @@
-redis-helper==0.1.3
-click>=5.0,<6.0
-ipdb>=0.8,<1.0
+click>=6.0
+pdbpp
+ipython
+redis-helper
