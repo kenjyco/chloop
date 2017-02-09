@@ -1,8 +1,6 @@
 chloop
 ======
 
-A Redis-backed REPL that saves command history, output, & errors.
-
 ## Install
 
 ```
