@@ -10,14 +10,6 @@ from functools import partial
 from pprint import pprint
 
 
-chloop_logs = rh.Collection(
-    'chloop-log',
-    'default',
-    index_fields='cmd,status,error_type',
-    json_fields='args,value'
-)
-
-
 class GetCharLoop(object):
     """Loop forever, receiving character input from user and performing actions
 
@@ -47,7 +39,7 @@ class GetCharLoop(object):
         self._DONT_LOG_CMDS = [
             'docstrings', 'shortcuts', 'errors', 'history',
         ]
-        self.collection = rh.Collection(
+        self._collection = rh.Collection(
             'chloop-log',
             self._name,
             index_fields='cmd,status,error_type',
@@ -80,7 +72,7 @@ class GetCharLoop(object):
             elif ch == '-':
                 try:
                     user_input = click.prompt(text='', prompt_suffix='- ')
-                    chloop_logs.add(cmd='-', user_input=user_input, status='ok')
+                    self._collection.add(cmd='-', user_input=user_input, status='ok')
                 except click.exceptions.Abort:
                     print()
                     continue
@@ -107,7 +99,7 @@ class GetCharLoop(object):
                     else:
                         cmd_func = getattr(self, cmd)
                 except AttributeError:
-                    chloop_logs.add(cmd=cmd, status='error', error_type='invalid command')
+                    self._collection.add(cmd=cmd, status='error', error_type='invalid command')
                     print('invalid command')
                     continue
 
@@ -146,7 +138,7 @@ class GetCharLoop(object):
                     print('cmd: {}\nargs: {}'.format(repr(cmd), repr(args)))
 
                 if info:
-                    chloop_logs.add(**info)
+                    self._collection.add(**info)
             else:
                 try:
                     print(repr(ch), ord(ch))
