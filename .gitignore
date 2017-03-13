@@ -2,3 +2,8 @@
 *.py[cod]
 env/
 venv/
+dist/
+build/
+.eggs/
+.cache/
+*.egg-info/
