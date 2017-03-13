@@ -198,8 +198,16 @@ class GetCharLoop(object):
 
     def errors(self, *args):
         """Print/return any colon commands that raised exceptions (w/ traceback)"""
-        print('todo')
+        print('\n'.join(self._collection.find(
+            'status:error',
+            item_format='{_ts} -> cmd={cmd} error_value={error_value}\n{traceback_string}\n',
+            admin_fmt=True
+        )))
 
     def history(self, *args):
-        """Print/return colon commands used"""
-        print('todo')
+        """Print/return successful colon commands used"""
+        print('\n'.join(self._collection.find(
+            'status:ok',
+            item_format='{_ts} -> cmd={cmd} status={status}',
+            admin_fmt=True
+        )))
