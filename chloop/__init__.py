@@ -4,10 +4,27 @@ import sys
 import time
 import traceback
 import click
+import logging
+import os.path
 import redis_helper as rh
 from io import StringIO
 from functools import partial
 from pprint import pprint
+
+
+LOGFILE = os.path.abspath('log--chloop.log')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+file_handler = logging.FileHandler(LOGFILE, mode='a')
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(logging.Formatter(
+    '%(asctime)s - %(levelname)s - %(funcName)s: %(message)s'
+))
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+console_handler.setFormatter(logging.Formatter('%(asctime)s: %(message)s'))
+logger.addHandler(file_handler)
+logger.addHandler(console_handler)
 
 
 class GetCharLoop(object):
@@ -100,7 +117,7 @@ class GetCharLoop(object):
                         cmd_func = getattr(self, cmd)
                 except AttributeError:
                     self._collection.add(cmd=cmd, status='error', error_type='invalid command')
-                    print('invalid command')
+                    logger.error('invalid command: {}'.format(cmd))
                     continue
 
                 try:
@@ -134,8 +151,9 @@ class GetCharLoop(object):
                         )
                     }
                     print('=' * 70)
-                    print(info['traceback_string'])
-                    print('cmd: {}\nargs: {}'.format(repr(cmd), repr(args)))
+                    logger.error('cmd: {}\nargs: {}'.format(repr(cmd), repr(args)))
+                    with open(LOGFILE, 'a') as fp:
+                        fp.write(info['traceback_string'])
 
                 if info:
                     self._collection.add(**info)
