@@ -6,14 +6,14 @@ with open('README.rst', 'r') as fp:
 
 setup(
     name='chloop',
-    version='0.2.1',
+    version='0.2.2',
     description='A Redis-backed REPL that saves command history, output, & errors',
     long_description=long_description,
     author='Ken',
     author_email='kenjyco@gmail.com',
     license='MIT',
     url='https://github.com/kenjyco/chloop',
-    download_url='https://github.com/kenjyco/chloop/tarball/v0.2.1',
+    download_url='https://github.com/kenjyco/chloop/tarball/v0.2.2',
     packages=['chloop'],
     install_requires=[
         'click>=6.0',
