@@ -6,6 +6,7 @@ import traceback
 import click
 import logging
 import os.path
+import input_helper as ih
 import redis_helper as rh
 from io import StringIO
 from functools import partial
@@ -49,10 +50,15 @@ class GetCharLoop(object):
             - second item is some 'help text'
         - prompt: string to display when asking for input (default is '\n> ')
         - name: value of the 'name' argument for `redis_helper.Collection`
+        - input_hook: a callable (that receives `**kwargs`) to do extra things
+          with user input received after '-' is pressed
+            - the dict returned from the `input_helper.user_input_fancy` func
+              will be used as kwargs to the `input_hook`
         """
         self._chfunc_dict = kwargs.pop('chfunc_dict', {})
         self._prompt = kwargs.pop('prompt', '\n> ')
         self._name = kwargs.pop('name', 'default')
+        self._input_hook = kwargs.pop('input_hook', None)
         self._DONT_LOG_CMDS = [
             'docstrings', 'shortcuts', 'errors', 'history',
         ]
@@ -88,8 +94,10 @@ class GetCharLoop(object):
                 self._chfunc_dict[ch][0]()
             elif ch == '-':
                 try:
-                    user_input = click.prompt(text='', prompt_suffix='- ')
-                    self._collection.add(cmd='-', user_input=user_input, status='ok')
+                    user_input = ih.user_input_fancy('', '- ')
+                    if self._input_hook:
+                        self._input_hook(**user_input)
+                    self._collection.add(cmd='-', user_input=user_input['text'], status='ok')
                 except click.exceptions.Abort:
                     print()
                     continue
