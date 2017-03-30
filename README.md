@@ -159,10 +159,7 @@ class Mine(GetCharLoop):
     """A sub-class of GetCharLoop"""
     def __init__(self, *args, **kwargs):
         # Process any extra/custom kwargs here and set some attributes
-        if 'mything' in kwargs:
-            self.thing = kwargs.pop('mything')
-        else:
-            self.thing = 'some default value'
+        self.thing = kwargs.pop('mything', 'some default value')
 
         super(Mine, self).__init__(*args, **kwargs)
 
