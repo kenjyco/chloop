@@ -160,6 +160,7 @@ class GetCharLoop(object):
                     }
                     print('=' * 70)
                     logger.error('cmd: {}\nargs: {}'.format(repr(cmd), repr(args)))
+                    print(info['traceback_string'])
                     with open(LOGFILE, 'a') as fp:
                         fp.write(info['traceback_string'])
 
