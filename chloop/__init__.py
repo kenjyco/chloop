@@ -1,8 +1,4 @@
 import inspect
-import socket
-import sys
-import time
-import traceback
 import click
 import logging
 import os.path
@@ -87,7 +83,7 @@ class GetCharLoop(object):
             except (EOFError, KeyboardInterrupt):
                 break
             else:
-                if ch in ['\x03','\x04']:
+                if ch in ['\x03', '\x04']:
                     break
 
             if ch in self._chfunc_dict:
