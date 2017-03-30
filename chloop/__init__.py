@@ -7,6 +7,7 @@ import click
 import logging
 import os.path
 import input_helper as ih
+import bg_helper as bh
 import redis_helper as rh
 from io import StringIO
 from functools import partial
@@ -96,7 +97,7 @@ class GetCharLoop(object):
                 try:
                     user_input = ih.user_input_fancy('', '- ')
                     if self._input_hook:
-                        self._input_hook(**user_input)
+                        bh.call_func(self._input_hook, **user_input, logger=logger)
                     self._collection.add(cmd='-', user_input=user_input['text'], status='ok')
                 except click.exceptions.Abort:
                     print()
@@ -128,41 +129,10 @@ class GetCharLoop(object):
                     logger.error('invalid command: {}'.format(cmd))
                     continue
 
-                try:
-                    value = cmd_func()
-                    if cmd not in self._DONT_LOG_CMDS:
-                        info = {
-                            'status': 'ok',
-                            'cmd': cmd,
-                            'args': args,
-                            'value': value
-                        }
-                    else:
-                        info = {}
-                except:
-                    etype, evalue, tb = sys.exc_info()
-                    epoch = time.time()
-                    info = {
-                        'status': 'error',
-                        'cmd': cmd,
-                        'traceback_string': traceback.format_exc(),
-                        'error_type': repr(etype),
-                        'error_value': repr(evalue),
-                        'func': getattr(cmd_func, '__name__', ''),
-                        'func_doc': getattr(cmd_func, '__doc__', ''),
-                        'func_module': getattr(cmd_func, '__module__', ''),
-                        'func_args': repr(args),
-                        'fqdn': socket.getfqdn(),
-                        'time_epoch': epoch,
-                        'time_string': time.strftime(
-                            '%Y_%m%d-%a-%H%M%S', time.localtime(epoch)
-                        )
-                    }
-                    print('=' * 70)
-                    logger.error('cmd: {}\nargs: {}'.format(repr(cmd), repr(args)))
-                    print(info['traceback_string'])
-                    with open(LOGFILE, 'a') as fp:
-                        fp.write(info['traceback_string'])
+                info = bh.call_func(cmd_func, *args, logger=logger)
+                info['cmd'] = cmd
+                if cmd in self._DONT_LOG_CMDS:
+                    info = {}
 
                 if info:
                     self._collection.add(**info)

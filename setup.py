@@ -20,6 +20,7 @@ setup(
         'pdbpp',
         'ipython',
         'redis-helper',
+        'bg-helper',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
