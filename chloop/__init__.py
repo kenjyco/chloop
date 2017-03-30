@@ -6,7 +6,6 @@ import input_helper as ih
 import bg_helper as bh
 import redis_helper as rh
 from io import StringIO
-from functools import partial
 from pprint import pprint
 
 
@@ -116,10 +115,7 @@ class GetCharLoop(object):
                     continue
 
                 try:
-                    if args:
-                        cmd_func = partial(getattr(self, cmd), *args)
-                    else:
-                        cmd_func = getattr(self, cmd)
+                    cmd_func = getattr(self, cmd)
                 except AttributeError:
                     self._collection.add(cmd=cmd, status='error', error_type='invalid command')
                     logger.error('invalid command: {}'.format(cmd))
