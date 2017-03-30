@@ -57,14 +57,14 @@ class GetCharLoop(object):
         """
         self._chfunc_dict = kwargs.pop('chfunc_dict', {})
         self._prompt = kwargs.pop('prompt', '\n> ')
-        self._name = kwargs.pop('name', 'default')
+        self._loop_name = kwargs.pop('name', 'default')
         self._input_hook = kwargs.pop('input_hook', None)
         self._DONT_LOG_CMDS = [
             'docstrings', 'shortcuts', 'errors', 'history',
         ]
         self._collection = rh.Collection(
             'chloop-log',
-            self._name,
+            self._loop_name,
             index_fields='cmd,status,error_type',
             json_fields='args,value'
         )
