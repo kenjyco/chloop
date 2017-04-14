@@ -29,10 +29,10 @@ class GetCharLoop(object):
 
     - ^d or ^c to break the loop
     - ':' to enter a command (and any arguments)
-        - the name of the command should be monkeypatched on the GetCharLoop
-          instance, or be a defined method on a GetCharLoop sub-class
-        - the function bound to `:command` should accept `*args` only
-    - '-' to receive an input line from user (a note)
+        - any method defined on GetCharLoop (or a sub-class) will be callable
+          as a "colon command" (if its name does not start with '_')
+        - the method for the `:command` should only accept `*args`
+    - '-' to allow user to provide input that will be processed by the `input_hook`
     """
     def __init__(self, *args, **kwargs):
         """
