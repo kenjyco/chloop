@@ -34,6 +34,8 @@ class GetCharLoop(object):
         - the method for the `:command` should only accept `*args`
     - '-' to allow user to provide input that will be processed by the `input_hook`
     """
+    _startup_message = ':docstrings to see all colon commands\n:shortcuts to see hotkeys\n'
+
     def __init__(self, *args, **kwargs):
         """
 
@@ -75,6 +77,7 @@ class GetCharLoop(object):
         }
 
     def __call__(self):
+        print(self._startup_message)
         while True:
             click.secho(self._prompt, nl=False, fg='cyan', bold=True)
             try:
@@ -93,7 +96,8 @@ class GetCharLoop(object):
                     user_input = ih.user_input_fancy('', '- ')
                     if self._input_hook:
                         bh.call_func(self._input_hook, **user_input, logger=logger)
-                    self._collection.add(cmd='-', user_input=user_input['text'], status='ok')
+                    else:
+                        self._collection.add(cmd='-', user_input=user_input['text'], status='ok')
                 except click.exceptions.Abort:
                     print()
                     continue
