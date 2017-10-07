@@ -31,7 +31,7 @@ arguments you need to pass to that command.
 
 Any methods added to your sub-class of `GetCharLoop` are callable as **colon
 commands**, as long as they do not start with an underscore (`_`). Methods
-should **only accept *args**, if anything.
+should **only accept `*args`**, if anything.
 
 For any methods/commands that should not be logged to the history, append the
 method name to the end of the `self._DONT_LOG_CMDS` list.
@@ -39,6 +39,11 @@ method name to the end of the `self._DONT_LOG_CMDS` list.
 #### The dash
 
 Hitting the `-` key at the prompt will allow you to type a note.
+
+#### The question mark
+
+Hitting the `?` key at the prompt will display the class docstring(s) and the
+startup message.
 
 #### Other keys
 
@@ -73,6 +78,7 @@ Loop forever, receiving character input from user and performing actions
           instance, or be a defined method on a GetCharLoop sub-class
         - the function bound to `:command` should accept `*args` only
     - '-' to receive an input line from user (a note)
+    - '?' to show the class docstring(s) and the startup message
 
 .:: docstrings ::.
 Print/return the docstrings of methods defined on this class
@@ -174,7 +180,7 @@ class Mine(GetCharLoop):
     def somefunc(self, *args):
         """Does something"""
         args_as_one = ' '.join(args)
-        print repr(args_as_one)
+        print(repr(args_as_one))
         return args_as_one
 
     def lame(self):

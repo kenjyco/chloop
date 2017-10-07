@@ -34,6 +34,7 @@ class GetCharLoop(object):
           as a "colon command" (if its name does not start with '_')
         - the method for the `:command` should only accept `*args`
     - '-' to allow user to provide input that will be processed by the `input_hook`
+    - '?' to show the class docstring(s) and the startup message
     """
     _startup_message = ':docstrings to see all colon commands\n:shortcuts to see hotkeys\n'
 
@@ -98,6 +99,9 @@ class GetCharLoop(object):
             if ch in self._chfunc_dict:
                 print(ch)
                 self._chfunc_dict[ch][0]()
+            elif ch == '?':
+                print(self._class_doc())
+                print(self._startup_message)
             elif ch == '-':
                 try:
                     user_input = ih.user_input_fancy('', '- ')
