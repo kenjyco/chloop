@@ -6,6 +6,7 @@ import input_helper as ih
 import bg_helper as bh
 import redis_helper as rh
 from io import StringIO
+from collections import OrderedDict
 from pprint import pprint
 
 
@@ -41,7 +42,7 @@ class GetCharLoop(object):
 
         kwargs:
 
-        - chfunc_dict: a dictionary where keys are characters and values are
+        - chfunc_dict: an OrderedDict where keys are characters and values are
           2-item tuples
             - first item is a function accepting no arguments
                 - use `functools.partial` if needed
@@ -53,7 +54,7 @@ class GetCharLoop(object):
             - the dict returned from the `input_helper.user_input_fancy` func
               will be used as kwargs to the `input_hook`
         """
-        self._chfunc_dict = kwargs.pop('chfunc_dict', {})
+        self._chfunc_dict = kwargs.pop('chfunc_dict', OrderedDict())
         self._prompt = kwargs.pop('prompt', '\n> ')
         self._loop_name = kwargs.pop('name', 'default')
         self._input_hook = kwargs.pop('input_hook', None)
@@ -75,6 +76,12 @@ class GetCharLoop(object):
             method: getattr(self, method).__doc__ or ''
             for method in self._method_names
         }
+
+        if type(self._chfunc_dict) != OrderedDict:
+            self._chfunc_dict = OrderedDict(sorted(
+                self._chfunc_dict.items(),
+                key=lambda k: k[1]
+            ))
 
     def __call__(self):
         print(self._startup_message)
@@ -181,7 +188,7 @@ class GetCharLoop(object):
         """Print/return any hotkey shortcuts defined on this class"""
         fp = StringIO()
         if self._chfunc_dict:
-            for ch in sorted(self._chfunc_dict.keys()):
+            for ch in self._chfunc_dict:
                 line = '{} -- {}\n'.format(repr(ch), self._chfunc_dict[ch][1])
                 fp.write(line)
 
