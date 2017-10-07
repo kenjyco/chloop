@@ -53,15 +53,32 @@ Hitting any other key at the prompt will do one of the following:
   command to see what is available)
 - display the character and its integer ordinal
 
-To add new hotkey shortcuts, update the `self._chfunc_dict` object in the
-`__init__` method of your subclass. The values for items in this dictionary are
-2-item tuples.
-
-- 1st item is a **callable** that accepts no arguments
-- 2nd item is a short help string
+A hotkey can be bound to any callable object that accepts no arguments.
 
 > Use `functools.partial` (if necessary) to create a callable accepting no
 > arguments.
+
+Adding hotkeys (simple)
+
+- call the `_add_hotkey` method on your instance of `GetCharLoop` (or sub-class)
+  with the following args
+    - `ch`: character hotkey
+    - `func`: callable object that accepts no arguments
+    - `help_string`: a string containing short help text for hotkey
+
+Adding hotkeys (when using callables on `self`)
+
+- call the `self._chfunc_dict_update` method in the `__init__` method of your
+  subclass with a list of tuples or a dict.
+    - the keys of the dict (or first items in list of tuples) are the hotkey
+      characters
+    - the values of the dict (or second items in list of tuples) are 2-item
+      tuples
+        - 1st item is a **callable** that accepts no arguments
+        - 2nd item is a short help string
+
+        > Note: when passing a dict, the items will be inserted in the
+        > alphabetical order of  the help string.
 
 ## Basic example
 
@@ -165,20 +182,21 @@ class Mine(GetCharLoop):
     """A sub-class of GetCharLoop"""
     def __init__(self, *args, **kwargs):
         # Process any extra/custom kwargs here and set some attributes
-        self.thing = kwargs.pop('mything', 'some default value')
+        self._mything = kwargs.pop('mything', 'some default value')
 
         super(Mine, self).__init__(*args, **kwargs)
 
         # Add some single-key shorcuts that call methods on `self`
-        self._chfunc_dict.update({
-            'h': (self.history,
-                  'display recent command history'),
-            'e': (self.errors,
-                  'display recent errors'),
-        })
+        self._chfunc_dict_update([
+            ('h', (self.history,
+                  'display recent command history')),
+            ('e', (self.errors,
+                  'display recent errors')),
+        ])
+
 
     def somefunc(self, *args):
-        """Does something"""
+        """Joins the args passed to it into a string"""
         args_as_one = ' '.join(args)
         print(repr(args_as_one))
         return args_as_one
@@ -193,6 +211,7 @@ class Mine(GetCharLoop):
 ```
 if __name__ == '__main__':
     m = Mine(prompt='\nmyprompt> ')
+	m._add_hotkey('a', lambda: print('hello'), 'say hello')
     m()
 ```
 
@@ -209,6 +228,10 @@ u'here are some args'
 myprompt> :shortcuts
 'e' -- display recent errors
 'h' -- display recent command history
+'a' -- say hello
+
+myprompt> a
+hello
 
 myprompt> :lame
 ======================================================================
