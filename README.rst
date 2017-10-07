@@ -143,9 +143,9 @@ Basic example
      93                         from IPython import embed; embed()
      94                         continue
      95
-    (Pdb++) self.collection
+    (Pdb++) self._collection
     Collection('chloop-log', 'default', index_fields='cmd,status,error_type', json_fields='args,value')
-    (Pdb++) self.collection.keyspace
+    (Pdb++) self._collection.keyspace
     []
     (Pdb++) c
 
@@ -160,7 +160,7 @@ Basic example
     object?   -> Details about 'object', use 'object??' for extra details.
 
 
-    In [1]: self.collection
+    In [1]: self._collection
     Out[1]: Collection('chloop-log', 'default', index_fields='cmd,status,error_type', json_fields='args,value')
 
     In [2]: self.shortcuts
