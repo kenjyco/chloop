@@ -161,6 +161,29 @@ class GetCharLoop(object):
         # This function is actually never called, only added for the docstring
         pass
 
+    def _chfunc_dict_update(self, obj):
+        """Update the self._chfunc_dict OrderedDict
+
+        - obj: a list of tuples or a dict
+        """
+        if type(obj) == dict:
+            self._chfunc_dict.update(sorted(
+                obj.items(),
+                key=lambda k: k[1]
+            ))
+        else:
+            self._chfunc_dict.update(obj)
+
+    def _add_hotkey(self, ch, func, help_string):
+        """Update the self._chfunc_dict OrderedDict
+
+        - ch: character hotkey
+        - func: callable object that accepts no arguments
+        - help_string: a string containing short help text for hotkey
+        """
+        assert callable(func), 'func must be callable!'
+        self._chfunc_dict[ch] = (func, help_string)
+
     def _class_doc(self):
         """Return a cumulative docstring for class and parent classes"""
         docs = []
