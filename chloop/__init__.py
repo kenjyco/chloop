@@ -98,7 +98,7 @@ class GetCharLoop(object):
 
             if ch in self._chfunc_dict:
                 print(ch)
-                self._chfunc_dict[ch][0]()
+                bh.call_func(self._chfunc_dict[ch][0], logger=logger)
             elif ch == '?':
                 print(self._class_doc())
                 print(self._startup_message)
