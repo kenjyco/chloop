@@ -81,7 +81,7 @@ class GetCharLoop(object):
         if type(self._chfunc_dict) != OrderedDict:
             self._chfunc_dict = OrderedDict(sorted(
                 self._chfunc_dict.items(),
-                key=lambda k: k[1]
+                key=lambda k: k[1][1]
             ))
 
     def __call__(self):
