@@ -96,10 +96,7 @@ class GetCharLoop(object):
                 if ch in ['\x03', '\x04']:
                     break
 
-            if ch in self._chfunc_dict:
-                print(ch)
-                bh.call_func(self._chfunc_dict[ch][0], logger=logger)
-            elif ch == '?':
+            if ch == '?':
                 print('?\n', self._class_doc())
                 print(self._startup_message)
             elif ch == '-':
@@ -143,6 +140,9 @@ class GetCharLoop(object):
 
                 if info:
                     self._collection.add(**info)
+            elif ch in self._chfunc_dict:
+                print(ch)
+                bh.call_func(self._chfunc_dict[ch][0], logger=logger)
             else:
                 try:
                     print(repr(ch), ord(ch))
