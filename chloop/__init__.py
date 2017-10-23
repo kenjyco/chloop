@@ -54,11 +54,18 @@ class GetCharLoop(object):
           with user input received after '-' is pressed
             - the dict returned from the `input_helper.user_input_fancy` func
               will be used as kwargs to the `input_hook`
+        - pre_input_hook: a callable (receiving no args) that returns a dict of
+          info (as soon as '-' is pressed) that will be passed to `input_hook`
+        - post_input_hook: a callable (receiving no args) that returns a dict of
+          info (as soon as user_input_fancy completes) that will be passed to
+          `input_hook`
         """
         self._chfunc_dict = kwargs.pop('chfunc_dict', OrderedDict())
         self._prompt = kwargs.pop('prompt', '\n> ')
         self._loop_name = kwargs.pop('name', 'default')
         self._input_hook = kwargs.pop('input_hook', None)
+        self._pre_input_hook = kwargs.pop('pre_input_hook', None)
+        self._post_input_hook = kwargs.pop('post_input_hook', None)
         self._DONT_LOG_CMDS = [
             'docstrings', 'shortcuts', 'errors', 'history',
         ]
@@ -101,11 +108,31 @@ class GetCharLoop(object):
                 print(self._startup_message)
             elif ch == '-':
                 try:
-                    user_input = ih.user_input_fancy('', '- ')
-                    if self._input_hook:
-                        bh.call_func(self._input_hook, **user_input, logger=logger)
+                    if self._pre_input_hook:
+                        pre_input_data = self._pre_input_hook()
                     else:
-                        self._collection.add(cmd='-', user_input=user_input['text'], status='ok')
+                        pre_input_data = {}
+                    user_input = ih.user_input_fancy('', '- ')
+                    if self._post_input_hook:
+                        post_input_data = self._post_input_hook()
+                    else:
+                        post_input_data = {}
+                    if self._input_hook:
+                        bh.call_func(
+                            self._input_hook,
+                            **user_input,
+                            **pre_input_data,
+                            **post_input_data,
+                            logger=logger
+                        )
+                    else:
+                        self._collection.add(
+                            cmd='-',
+                            user_input=user_input['text'],
+                            status='ok',
+                            **pre_input_data,
+                            **post_input_data
+                        )
                 except click.exceptions.Abort:
                     print()
                     continue
