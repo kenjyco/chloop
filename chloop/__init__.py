@@ -50,6 +50,9 @@ class GetCharLoop(object):
             - second item is some 'help text'
         - prompt: string to display when asking for input (default is '\n> ')
         - name: value of the 'name' argument for `redis_helper.Collection`
+        - break_chars: list of characters that can be used to break the loop
+            - if any char is used in chfunc_dict, the associated function will
+              be called before breaking the input loop
         - input_hook: a callable (that receives `**kwargs`) to do extra things
           with user input received after '-' is pressed
             - the dict returned from the `input_helper.user_input_fancy` func
@@ -63,6 +66,7 @@ class GetCharLoop(object):
         self._chfunc_dict = kwargs.pop('chfunc_dict', OrderedDict())
         self._prompt = kwargs.pop('prompt', '\n> ')
         self._loop_name = kwargs.pop('name', 'default')
+        self._break_chars = kwargs.pop('break_chars', [])
         self._input_hook = kwargs.pop('input_hook', None)
         self._pre_input_hook = kwargs.pop('pre_input_hook', None)
         self._post_input_hook = kwargs.pop('post_input_hook', None)
@@ -170,6 +174,11 @@ class GetCharLoop(object):
             elif ch in self._chfunc_dict:
                 print(ch)
                 bh.call_func(self._chfunc_dict[ch][0], logger=logger)
+                if ch in self._break_chars:
+                    break
+            elif ch in self._break_chars:
+                print(ch)
+                break
             else:
                 try:
                     print(repr(ch), ord(ch))
