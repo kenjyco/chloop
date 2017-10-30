@@ -170,13 +170,17 @@ Do you really want to exit ([y]/n)? y
 >
 ```
 
-## Example (sub-class)
+## Sub-class example
 
-#### Import `GetCharLoop` and sub-class it
+- Import `GetCharLoop` and sub-class it
+- Initialize the sub-class and call it
+
+> Save the following to `mine.py`
 
 ```
 from functools import partial
 from chloop import GetCharLoop
+
 
 class Mine(GetCharLoop):
     """A sub-class of GetCharLoop"""
@@ -204,11 +208,8 @@ class Mine(GetCharLoop):
     def lame(self):
         """raise exception"""
         return 1/0
-```
 
-#### Initialize the sub-class and call it
 
-```
 if __name__ == '__main__':
     m = Mine(prompt='\nmyprompt> ')
 	m._add_hotkey('a', lambda: print('hello'), 'say hello')
@@ -217,10 +218,10 @@ if __name__ == '__main__':
 
 #### Interact with the REPL
 
-> Assuming the above code is in a file called `main.py`
+> Assuming the above code is in a file called `mine.py`
 
 ```
-% python main.py
+% python mine.py
 
 myprompt> :somefunc here are some args
 u'here are some args'
