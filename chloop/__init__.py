@@ -142,10 +142,14 @@ class GetCharLoop(object):
                     continue
             elif ch == ':':
                 try:
-                    user_input = click.prompt(text='', prompt_suffix=':')
+                    user_input = click.prompt(text='', prompt_suffix=':', default='', show_default=False)
                 except click.exceptions.Abort:
                     print()
                     continue
+                else:
+                    if not user_input:
+                        print()
+                        continue
                 cmd = user_input.split()[0]
                 args = user_input.split()[1:]
 
