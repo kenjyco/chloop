@@ -36,7 +36,7 @@ class GetCharLoop(object):
     - '-' to allow user to provide input that will be processed by the `input_hook`
     - '?' to show the class docstring(s) and the startup message
     """
-    _startup_message = ':docstrings to see all colon commands\n:shortcuts to see hotkeys\n'
+    _startup_message = ':docstrings to see all colon commands\n:shortcuts to see all hotkeys\n'
 
     def __init__(self, *args, **kwargs):
         """
@@ -237,9 +237,6 @@ class GetCharLoop(object):
     def docstrings(self, *args):
         """Print/return the docstrings of methods defined on this class"""
         fp = StringIO()
-        fp.write('=' * 70 + '\n')
-        class_doc = self._class_doc()
-        fp.write(class_doc + '\n')
 
         for method, docstring in sorted(self._method_docs.items()):
             if docstring:
