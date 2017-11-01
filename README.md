@@ -1,19 +1,29 @@
-chloop
-======
-
 ## Install
+
+Install Redis and start server
+
+```
+% sudo apt-get install -y redis-server
+
+or
+
+% brew install redis@3.2
+% brew services start redis@3.2
+```
+
+Install with `pip`
 
 ```
 % pip3 install chloop
 ```
+
+## Usage
 
 The `GetCharLoop` class is provided by the `chloop` package. Calling an
 **instance** of this class starts a REPL session, which the user can end by
 pressing `Ctrl` + `d` or `Ctrl` + `c`.
 
 > See the **Example** section below.
-
-## Usage
 
 The **first** character you type at the REPL prompt is significant.
 
