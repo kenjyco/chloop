@@ -28,7 +28,7 @@ logger.addHandler(console_handler)
 class GetCharLoop(object):
     """Loop forever, receiving character input from user and performing actions
 
-    - ^d or ^c to break the loop
+    - ctrl+d or ctrl+c to break the loop
     - ':' to enter a command (and any arguments)
         - any method defined on GetCharLoop (or a sub-class) will be callable
           as a "colon command" (if its name does not start with '_')
