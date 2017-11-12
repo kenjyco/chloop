@@ -253,7 +253,10 @@ class GetCharLoop(object):
         fp = StringIO()
         if self._chfunc_dict:
             for ch in self._chfunc_dict:
-                line = '{} -- {}\n'.format(repr(ch), self._chfunc_dict[ch][1])
+                line = '{} -- {}\n'.format(
+                    ih.CH2NAME.get(ch, repr(ch)),
+                    self._chfunc_dict[ch][1]
+                )
                 fp.write(line)
 
         text = fp.getvalue()
