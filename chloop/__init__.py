@@ -79,6 +79,11 @@ class GetCharLoop(object):
             index_fields='cmd,status,error_type',
             json_fields='args,value'
         )
+        self._wishlist = rh.Collection(
+            'chloop-wish',
+            self._loop_name,
+            index_fields='ch,cmd'
+        )
 
         self._method_names = [
             m[0]
@@ -97,10 +102,13 @@ class GetCharLoop(object):
 
     def __call__(self):
         print(self._startup_message)
+        self._char_hist = []
+        self._cmd_hist = []
         while True:
             click.secho(self._prompt, nl=False, fg='cyan', bold=True)
             try:
                 ch = click.getchar()
+                self._char_hist.append(ch)
             except (EOFError, KeyboardInterrupt):
                 break
             else:
@@ -152,6 +160,7 @@ class GetCharLoop(object):
                         continue
                 cmd = user_input.split()[0]
                 args = user_input.split()[1:]
+                self._cmd_hist.append(cmd)
 
                 if cmd == 'pdb':
                     import pdb; pdb.set_trace()
@@ -166,6 +175,17 @@ class GetCharLoop(object):
                 except AttributeError:
                     self._collection.add(cmd=cmd, status='error', error_type='invalid command')
                     logger.error('invalid command: {}'.format(cmd))
+                    result = self._wishlist.find(
+                        'cmd:{}'.format(cmd),
+                        admin_fmt=True,
+                        item_format='[NOT FULFILLED YET] {message} ({_ts})'
+                    )
+                    if result:
+                        print(result[0])
+                    else:
+                        message = ih.user_input('what do you wish this command did')
+                        if message:
+                            self._wishlist.add(cmd=cmd, message=message)
                     continue
 
                 info = bh.call_func(cmd_func, *args, logger=logger)
@@ -190,6 +210,21 @@ class GetCharLoop(object):
                     # ord() expected a character, but string of length 2 found
                     #   - happens if you press 'Esc' before another key
                     print(repr(ch))
+                result = self._wishlist.find(
+                    'ch:{}'.format(ch),
+                    admin_fmt=True,
+                    item_format='[NOT FULFILLED YET] {message} ({_ts})'
+                )
+                if result:
+                    print(result[0])
+                else:
+                    try:
+                        if ch == self._char_hist[-2]:
+                            message = ih.user_input('what do you wish this key press did')
+                            if message:
+                                self._wishlist.add(ch=ch, message=message)
+                    except IndexError:
+                        pass
 
     def pdb(self):
         """Start pdb (debugger). To continue back to the input loop, use 'c'"""
