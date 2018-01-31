@@ -320,5 +320,21 @@ class GetCharLoop(object):
         print('\n'.join(self._collection.find(
             'status:ok',
             item_format='{_ts} -> cmd={cmd} status={status}',
+            admin_fmt=True,
+            limit=limit
+        )))
+
+    def chars(self):
+        """Show chars (hotkeys) pressed during current session"""
+        print(self._char_hist)
+
+    def cmds(self):
+        """Show colon commands typed during current session"""
+        print(self._cmd_hist)
+
+    def wishlist(self):
+        """Show the wishlist (of hotkeys and commands that don't exist yet)"""
+        print('\n'.join(self._wishlist.find(
+            item_format='- ch={ch} cmd={cmd} message={message}',
             admin_fmt=True
         )))
