@@ -222,7 +222,7 @@ class Mine(GetCharLoop):
 
 if __name__ == '__main__':
     m = Mine(prompt='\nmyprompt> ')
-	m._add_hotkey('a', lambda: print('hello'), 'say hello')
+    m._add_hotkey('a', lambda: print('hello'), 'say hello')
     m()
 ```
 
