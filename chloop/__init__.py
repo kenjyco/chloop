@@ -119,8 +119,8 @@ class GetCharLoop(object):
             if ch == '?':
                 try:
                     if self._char_hist[-2] == '?':
-                        print(self.docstrings())
-                        print(self.shortcuts())
+                        self.docstrings()
+                        self.shortcuts()
                     else:
                         print('?\n', self._class_doc())
                         print(self._startup_message)
