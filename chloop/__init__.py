@@ -10,7 +10,7 @@ from collections import OrderedDict
 from pprint import pprint
 
 
-LOGFILE = os.path.abspath('log--chloop.log')
+LOGFILE = os.path.abspath(os.path.expanduser('~/logs/chloop.log'))
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 file_handler = logging.FileHandler(LOGFILE, mode='a')
