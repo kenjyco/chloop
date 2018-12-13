@@ -4,25 +4,14 @@ import logging
 import os.path
 import input_helper as ih
 import bg_helper as bh
+import fs_helper as fh
 import redis_helper as rh
 from io import StringIO
 from collections import OrderedDict
 from pprint import pprint
 
 
-LOGFILE = os.path.abspath(os.path.expanduser('~/logs/chloop.log'))
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-file_handler = logging.FileHandler(LOGFILE, mode='a')
-file_handler.setLevel(logging.DEBUG)
-file_handler.setFormatter(logging.Formatter(
-    '%(asctime)s - %(levelname)s - %(funcName)s: %(message)s'
-))
-console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.INFO)
-console_handler.setFormatter(logging.Formatter('%(asctime)s: %(message)s'))
-logger.addHandler(file_handler)
-logger.addHandler(console_handler)
+logger = fh.get_logger(__name__)
 
 
 class GetCharLoop(object):

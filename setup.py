@@ -21,6 +21,7 @@ setup(
         'ipython',
         'redis-helper',
         'bg-helper',
+        'fs-helper'
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
