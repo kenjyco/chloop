@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 with open('README.rst', 'r') as fp:
@@ -14,7 +14,7 @@ setup(
     license='MIT',
     url='https://github.com/kenjyco/chloop',
     download_url='https://github.com/kenjyco/chloop/tarball/v0.2.20',
-    packages=['chloop'],
+    packages=find_packages(),
     install_requires=[
         'click>=6.0',
         'redis-helper',
