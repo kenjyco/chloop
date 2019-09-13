@@ -18,6 +18,11 @@ Install with ``pip``
 
     % pip3 install chloop
 
+    Optionally install ipython with ``pip3 install ipython`` to enable
+    ``:ipython`` colon command on a GetCharLoop instance. Also
+    ``pip3 install pdbpp`` for an improved debug experience when using
+    ``:pdb`` colon command.
+
 Usage
 -----
 
