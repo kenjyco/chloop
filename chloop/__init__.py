@@ -165,7 +165,7 @@ class GetCharLoop(object):
                     continue
 
                 if cmd == 'ipython':
-                    from IPython import embed; embed()
+                    ih.start_ipython(warn=True, self=self)
                     continue
 
                 try:
