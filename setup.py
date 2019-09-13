@@ -17,8 +17,6 @@ setup(
     packages=['chloop'],
     install_requires=[
         'click>=6.0',
-        'pdbpp',
-        'ipython',
         'redis-helper',
         'bg-helper',
         'fs-helper'
