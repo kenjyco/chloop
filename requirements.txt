@@ -2,7 +2,3 @@ click>=6.0
 redis-helper
 bg-helper
 fs-helper
-
-# For development
-pdbpp
-ipython
