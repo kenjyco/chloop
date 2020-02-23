@@ -16,10 +16,10 @@ setup(
     download_url='https://github.com/kenjyco/chloop/tarball/v0.2.21',
     packages=find_packages(),
     install_requires=[
-        'click>=6.0',
-        'redis-helper',
         'bg-helper',
-        'fs-helper'
+        'click>=6.0',
+        'fs-helper',
+        'redis-helper',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
