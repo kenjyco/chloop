@@ -19,7 +19,7 @@ setup(
         'bg-helper',
         'click>=6.0',
         'fs-helper',
-        'redis-helper',
+        'redis-helper @ git+https://github.com/kenjyco/redis-helper@master#egg=redis-helper-0',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
