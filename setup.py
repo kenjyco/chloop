@@ -4,6 +4,9 @@ from setuptools import setup, find_packages
 with open('README.rst', 'r') as fp:
     long_description = fp.read()
 
+with open('requirements.txt', 'r') as fp:
+    requirements = fp.read().splitlines()
+
 setup(
     name='chloop',
     version='0.2.21',
@@ -15,12 +18,7 @@ setup(
     url='https://github.com/kenjyco/chloop',
     download_url='https://github.com/kenjyco/chloop/tarball/v0.2.21',
     packages=find_packages(),
-    install_requires=[
-        'bg-helper',
-        'click>=6.0',
-        'fs-helper',
-        'redis-helper',
-    ],
+    install_requires=requirements,
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
