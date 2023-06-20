@@ -147,15 +147,11 @@ class GetCharLoop(object):
                     print()
                     continue
             elif ch == ':':
-                try:
-                    user_input = click.prompt(text='', prompt_suffix=':', default='', show_default=False)
-                except click.exceptions.Abort:
+                user_input = ih.user_input('', ':')
+                if not user_input:
                     print()
                     continue
-                else:
-                    if not user_input:
-                        print()
-                        continue
+
                 cmd = user_input.split()[0]
                 args = user_input.split()[1:]
                 self._cmd_hist.append(cmd)
