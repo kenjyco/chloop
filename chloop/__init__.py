@@ -96,14 +96,14 @@ class GetCharLoop(object):
         self._cmd_hist = []
         while True:
             click.secho(self._prompt, nl=False, fg='cyan', bold=True)
-            try:
-                ch = click.getchar()
-                self._char_hist.append(ch)
-            except (EOFError, KeyboardInterrupt):
+            ch = ih.getchar()
+            if ch in ['\x03', '\x04']:
                 break
+            elif ch in ['\r']:
+                print()
+                continue
             else:
-                if ch in ['\x03', '\x04']:
-                    break
+                self._char_hist.append(ch)
 
             if ch == '?':
                 try:
@@ -116,36 +116,40 @@ class GetCharLoop(object):
                 except IndexError:
                     print('?\n', self._class_doc())
                     print(self._startup_message)
+
             elif ch == '-':
-                try:
-                    if self._pre_input_hook:
-                        pre_input_data = self._pre_input_hook()
-                    else:
-                        pre_input_data = {}
-                    user_input = ih.user_input_fancy('', '- ')
-                    if self._post_input_hook:
-                        post_input_data = self._post_input_hook()
-                    else:
-                        post_input_data = {}
-                    if self._input_hook:
-                        bh.call_func(
-                            self._input_hook,
-                            **user_input,
-                            **pre_input_data,
-                            **post_input_data,
-                            logger=logger
-                        )
-                    else:
-                        self._collection.add(
-                            cmd='-',
-                            user_input=user_input['text'],
-                            status='ok',
-                            **pre_input_data,
-                            **post_input_data
-                        )
-                except click.exceptions.Abort:
+                if self._pre_input_hook:
+                    pre_input_data = self._pre_input_hook()
+                else:
+                    pre_input_data = {}
+
+                user_input = ih.user_input_fancy('', '- ')
+                if not user_input['text']:
                     print()
                     continue
+
+                if self._post_input_hook:
+                    post_input_data = self._post_input_hook()
+                else:
+                    post_input_data = {}
+
+                if self._input_hook:
+                    bh.call_func(
+                        self._input_hook,
+                        **user_input,
+                        **pre_input_data,
+                        **post_input_data,
+                        logger=logger
+                    )
+                else:
+                    self._collection.add(
+                        cmd='-',
+                        user_input=user_input['text'],
+                        status='ok',
+                        **pre_input_data,
+                        **post_input_data
+                    )
+
             elif ch == ':':
                 user_input = ih.user_input('', ':')
                 if not user_input:
@@ -189,14 +193,17 @@ class GetCharLoop(object):
 
                 if info:
                     self._collection.add(**info)
+
             elif ch in self._chfunc_dict:
                 print(ch)
                 bh.call_func(self._chfunc_dict[ch][0], logger=logger)
                 if ch in self._break_chars:
                     break
+
             elif ch in self._break_chars:
                 print(ch)
                 break
+
             else:
                 try:
                     print(repr(ch), ord(ch))
