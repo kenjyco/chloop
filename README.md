@@ -1,41 +1,48 @@
+chloop is a Redis-backed character-driven REPL framework designed for developers who want to build custom interactive tools quickly and efficiently while providing progressive complexity. The library optimizes for single-keystroke efficiency while also leveraging vim's colon command paradigm to transform command-line interactions from sequential operations into immediate context-aware experiences.
+
+The core philosophy centers on **cognitive load reduction through muscle memory development**. Instead of forcing users to remember complex command syntax or navigate menus, chloop enables the creation of interfaces where common actions become instinctive single keystrokes, while advanced functionality remains accessible through discoverable colon commands.
+
+**Who benefits from this library:**
+- **Domain experts** who need immediate control over complex systems (audio/video exploration, API testing, data analysis)
+- **Interactive application developers** building tools for power users who value efficiency over discovery
+- **CLI tool creators** who want to provide both accessibility for beginners and efficiency for experts
+- **Content analysts** needing distraction-free, keyboard-driven workflows for media exploration
+- **Researchers** who need to rapidly navigate and annotate large datasets or media collections
+
+Real-world implementations include the **mocp-cli** package for interactive audio exploration with timestamp marking, and **vlc-helper** for precise video control and screenshot capture, demonstrating chloop's effectiveness in media analysis workflows.
+
 ## Install
 
-If you don't have [docker](https://docs.docker.com/get-docker) installed,
-install Redis and start server
+If you don't have [docker](https://docs.docker.com/get-docker) installed, install Redis and start server
 
 ```
-% sudo apt-get install -y redis-server
+sudo apt-get install -y redis-server
+```
 
 or
 
-% brew install redis
-% brew services start redis
+```
+brew install redis
+brew services start redis
 ```
 
 Install with `pip`
 
 ```
-% pip3 install chloop
+pip install chloop
 ```
 
-> Optionally install ipython with `pip3 install ipython` to enable `:ipython`
-> colon command on a GetCharLoop instance. Also `pip3 install pdbpp` for an
-> improved debug experience when using `:pdb` colon command.
+> Optionally install ipython with `pip install ipython` to enable `:ipython` colon command on a GetCharLoop instance. Also `pip install pdbpp` for an improved debug experience when using `:pdb` colon command.
 
-## Usage
+## QuickStart
 
-The `GetCharLoop` class is provided by the `chloop` package. Calling an
-**instance** of this class starts a REPL session, which the user can end by
-pressing `Ctrl` + `d` or `Ctrl` + `c`.
-
-> See the **Example** section below.
+The `GetCharLoop` class is provided by the `chloop` package. Calling an **instance** of this class starts a REPL session, which the user can end by pressing `Ctrl` + `d` or `Ctrl` + `c`.
 
 The **first** character you type at the REPL prompt is significant.
 
-#### The colon
+### The colon
 
-Hitting the `:` key at the prompt will allow you to enter a command and any
-arguments you need to pass to that command.
+Hitting the `:` key at the prompt will allow you to enter a command and any arguments you need to pass to that command.
 
 - `:docstrings` to view docstrings of methods defined on the class
 - `:errors` to view colon commands that raised exceptions
@@ -44,23 +51,21 @@ arguments you need to pass to that command.
 - `:ipython` to start ipython shell
 - `:shortcuts` to view hotkey shortcuts
 
-Any methods added to your sub-class of `GetCharLoop` are callable as **colon
-commands**, as long as they do not start with an underscore (`_`). Methods
-should **only accept `*args`**, if anything.
+Any methods added to your sub-class of `GetCharLoop` are callable as **colon commands**, as long as they do not start with an underscore (`_`). Methods should **only accept `*args`**, if anything.
 
-For any methods/commands that should not be logged to the history, append the
-method name to the end of the `self._DONT_LOG_CMDS` list.
+> For any methods/commands that should not be logged to the history, append the method name to the end of the `self._DONT_LOG_CMDS` list.
 
-#### The dash
+### The dash
 
 Hitting the `-` key at the prompt will allow you to type a note.
 
-#### The question mark
+### The question mark
 
-Hitting the `?` key at the prompt will display the class docstring(s) and the
-startup message.
+Hitting the `?` key at the prompt will display the class docstring(s) and the startup message.
 
-#### Other keys
+Hitting the `?` key a second time will show the available colon commands and shortcuts (equivalent to issuing `:docstrings` and `:shortcuts`)
+
+### Other keys
 
 Hitting any other key at the prompt will do one of the following:
 
@@ -68,49 +73,43 @@ Hitting any other key at the prompt will do one of the following:
   command to see what is available)
 - display the character and its integer ordinal
 
-A hotkey can be bound to any callable object that accepts no arguments.
+A hotkey can be bound to any callable object that accepts no arguments. Use `functools.partial` (if necessary) to create a callable accepting no arguments.
 
-> Use `functools.partial` (if necessary) to create a callable accepting no
-> arguments.
 
-Adding hotkeys (simple)
 
-- call the `_add_hotkey` method on your instance of `GetCharLoop` (or sub-class)
-  with the following args
-    - `ch`: character hotkey
-    - `func`: callable object that accepts no arguments
-    - `help_string`: a string containing short help text for hotkey
 
-Adding hotkeys (when using callables on `self`)
 
-- call the `self._chfunc_dict_update` method in the `__init__` method of your
-  subclass with a list of tuples or a dict.
-    - the keys of the dict (or first items in list of tuples) are the hotkey
-      characters
-    - the values of the dict (or second items in list of tuples) are 2-item
-      tuples
-        - 1st item is a **callable** that accepts no arguments
-        - 2nd item is a short help string
 
-        > Note: when passing a dict, the items will be inserted in the
-        > alphabetical order of  the help string.
 
-## Basic example
+### Basic example
+
+> The default prompt if none is specified is `> `.
 
 ```
 % python3 -c 'from chloop import GetCharLoop; GetCharLoop()()'
 
-> :docstrings
-======================================================================
-Loop forever, receiving character input from user and performing actions
+> ?
+ Loop forever, receiving character input from user and performing actions
 
-    - ^d or ^c to break the loop
+    - ctrl+d or ctrl+c to break the loop
     - ':' to enter a command (and any arguments)
-        - the name of the command should be monkeypatched on the GetCharLoop
-          instance, or be a defined method on a GetCharLoop sub-class
-        - the function bound to `:command` should accept `*args` only
-    - '-' to receive an input line from user (a note)
-    - '?' to show the class docstring(s) and the startup message
+        - any method defined on GetCharLoop (or a sub-class) will be callable
+          as a "colon command" (if its name does not start with '_')
+        - the method for the `:command` should only accept `*args`
+    - '-' to allow user to provide input that will be processed by the `input_hook`
+    - '?' to show class doc and the startup message
+    - '??' to show class doc, the startup message, docstrings (:commands), and shortcuts
+
+:docstrings to see all colon commands
+:shortcuts to see all hotkeys
+
+
+> :docstrings
+.:: chars ::.
+Show chars (hotkeys) pressed during current session
+
+.:: cmds ::.
+Show colon commands typed during current session
 
 .:: docstrings ::.
 Print/return the docstrings of methods defined on this class
@@ -119,7 +118,7 @@ Print/return the docstrings of methods defined on this class
 Print/return any colon commands that raised exceptions (w/ traceback)
 
 .:: history ::.
-Print/return colon commands used
+Print/return successful colon commands used (default 10)
 
 .:: ipython ::.
 Start ipython shell. To continue back to the input loop, use 'ctrl + d'
@@ -130,62 +129,11 @@ Start pdb (debugger). To continue back to the input loop, use 'c'
 .:: shortcuts ::.
 Print/return any hotkey shortcuts defined on this class
 
-
-
-> :pdb
-[10] > /tmp/ch/venv/lib/python3.5/site-packages/chloop/__init__.py(90)__call__()
--> continue
-(Pdb++) l
- 85                     cmd = user_input.split()[0]
- 86                     args = user_input.split()[1:]
- 87
- 88                     if cmd == 'pdb':
- 89                         import pdb; pdb.set_trace()
- 90  ->                     continue
- 91
- 92                     if cmd == 'ipython':
- 93                         from IPython import embed; embed()
- 94                         continue
- 95
-(Pdb++) self._collection
-Collection('chloop-log', 'default', index_fields='cmd,status,error_type', json_fields='args,value')
-(Pdb++) self._collection.keyspace
-[]
-(Pdb++) c
-
-> :ipython
-Python 3.5.1+ (default, Mar 30 2016, 22:46:26)
-Type "copyright", "credits" or "license" for more information.
-
-IPython 5.2.2 -- An enhanced Interactive Python.
-?         -> Introduction and overview of IPython's features.
-%quickref -> Quick reference.
-help      -> Python's own help system.
-object?   -> Details about 'object', use 'object??' for extra details.
-
-
-In [1]: self._collection
-Out[1]: Collection('chloop-log', 'default', index_fields='cmd,status,error_type', json_fields='args,value')
-
-In [2]: self.shortcuts
-Out[2]: <bound method GetCharLoop.shortcuts of <chloop.GetCharLoop object at 0x7f9f8ff5f5f8>>
-
-In [3]: self.docstrings
-Out[3]: <bound method GetCharLoop.docstrings of <chloop.GetCharLoop object at 0x7f9f8ff5f5f8>>
-
-In [4]:
-Do you really want to exit ([y]/n)? y
-
-
-> :shortcuts
-
-
-> - there are no shortcuts defined by default
-
->
+.:: wishlist ::.
+Show the wishlist (of hotkeys and commands that don't exist yet)
 ```
 
-## Sub-class example
+### Sub-class example
 
 - Import `GetCharLoop` and sub-class it
 - Initialize the sub-class and call it
@@ -231,8 +179,6 @@ if __name__ == '__main__':
     m()
 ```
 
-#### Interact with the REPL
-
 > Assuming the above code is in a file called `mine.py`
 
 ```
@@ -261,15 +207,154 @@ ZeroDivisionError: integer division or modulo by zero
 cmd: u'lame'
 args: []
 
-myprompt> :pdb
-...
-
-myprompt> e
-(errors output)
-
-myprompt> - here is a note
-
-myprompt> - here is another note
-
-myprompt>
 ```
+
+### Extended example
+
+> This example shows a subset of actual functionality from mocp-cli and assumes the moc wrapper is avaialbe.
+
+```python
+from functools import partial
+from collections import OrderedDict
+from chloop import GetCharLoop
+import moc
+
+
+class SimpleMusicPlayer(GetCharLoop):
+    """Simplified music player interface using MOC backend"""
+
+    def seek(self, num):
+        """Seek forward or backward by specified seconds"""
+        moc.seek(int(num))
+
+    def go(self, timestamp):
+        """Jump to a particular timestamp"""
+        moc.go(timestamp)
+
+    def find(self, *glob_patterns):
+        """Find and select audio files at specified glob patterns"""
+        moc.find_select_and_play(*glob_patterns)
+
+
+shortcuts = OrderedDict([
+    (' ', (moc.toggle_pause, 'pause/unpause')),
+    ('i', (lambda: print(moc.info_string()), 'show info about currently playing file')),
+    ('f', (partial(moc.find_and_play, '.'), 'find and play audio files found in current directory')),
+    ('F', (partial(moc.find_select_and_play, '.'), 'find, select, and play audio files found in current directory')),
+    ('Q', (moc.stop_server, 'stop MOC server and quit')),
+    ('n', (moc.next, 'next file in playlist')),
+    ('p', (moc.previous, 'previous file in playlist')),
+    ('H', (partial(moc.seek, -30), 'rewind 30 seconds')),
+    ('h', (partial(moc.seek, -5), 'rewind 5 seconds')),
+    ('L', (partial(moc.seek, 30), 'fast forward 30 seconds')),
+    ('l', (partial(moc.seek, 5), 'fast forward 5 seconds')),
+    ('j', (moc.volume_down, 'lower volume')),
+    ('k', (moc.volume_up, 'raise volume')),
+    ('q', (lambda: None, 'quit')),
+])
+
+# Create and start the music player interface
+player = SimpleMusicPlayer(
+    chfunc_dict=shortcuts,
+    name='simple-music',
+    prompt='music> ',
+    break_chars=['q', 'Q']
+)
+
+if __name__ == '__main__':
+    player()
+```
+
+Then after starting the repl:
+
+```
+music> :shortcuts
+Space -- pause/unpause
+i -- show info about currently playing file
+f -- find and play audio files found in current directory
+F -- find, select, and play audio files found in current directory
+Q -- stop MOC server and quit
+n -- next file in playlist
+p -- previous file in playlist
+H -- rewind 30 seconds
+h -- rewind 5 seconds
+L -- fast foward 30 seconds
+l -- fast foward 5 seconds
+j -- lower volume
+k -- raise volume
+q -- quit
+```
+
+## API Overview
+
+### Core Class
+
+- **`GetCharLoop(*args, **kwargs)`** - Main framework class for building character-driven interactive tools
+  - `chfunc_dict`: OrderedDict mapping characters to (function, help_text) tuples for hotkeys
+  - `prompt`: String to display when asking for input (default: `'\n> '`)
+  - `name`: Value for Redis collection naming to isolate different tool instances
+  - `break_chars`: List of characters that exit the loop (can trigger functions before exit)
+  - `input_hook`: Callable receiving `**kwargs` to process user input after '-' key pressed
+  - `pre_input_hook`: Callable receiving no args executed when `-` is pressed, returning dict of data to input_hook
+  - `post_input_hook`: Callable receiving no args executed after input collection, returning dict of data  to input_hook
+  - Returns: Configured GetCharLoop instance ready for direct use
+  - Internal calls: `rh.Collection()`
+
+### Primary Methods
+
+- **`GetCharLoop.__call__()`** - Start the interactive character loop
+  - Returns: None (runs until interrupted with Ctrl+C or Ctrl+D)
+  - Internal calls: `ih.getchar()`, `self.docstrings()`, `self.shortcuts()`, `ih.user_input_fancy()`, `bh.call_func()`, `ih.user_input()`, `ih.start_ipython()`
+
+### Built-in Commands
+
+All public methods automatically become `:commands` through naming convention:
+
+- **`GetCharLoop.docstrings(*args)`** - Display all available commands with their documentation
+  - Returns: String containing formatted docstring output
+  - Internal calls: None
+
+- **`GetCharLoop.shortcuts(*args)`** - Show configured hotkey mappings and their descriptions
+  - Returns: String containing formatted shortcut output
+  - Internal calls: None
+
+- **`GetCharLoop.history(*args)`** - Display recent successful commands
+  - `*args` - Optional limit parameter (default 10)
+  - Returns: None (prints formatted history)
+  - Internal calls: `ih.from_string()`
+
+- **`GetCharLoop.errors(*args)`** - Show recent command errors with full tracebacks
+  - `*args` - Optional limit parameter (default 10)
+  - Returns: None (prints formatted error output)
+  - Internal calls: `ih.from_string()`
+
+- **`GetCharLoop.chars()`** - Display characters pressed during current session
+  - Returns: None (prints character history)
+  - Internal calls: None
+
+- **`GetCharLoop.cmds()`** - Show colon commands typed during current session
+  - Returns: None (prints command history)
+  - Internal calls: None
+
+- **`GetCharLoop.wishlist()`** - Display captured user intent for non-existent commands and hotkeys
+  - Returns: None (prints formatted wishlist)
+  - Internal calls: None
+
+### Special Commands
+
+- **`:pdb`** - Launch Python debugger
+- **`:ipython`** - Start IPython shell with `self` available for inspection
+
+### Extension Methods
+
+- **`GetCharLoop._add_hotkey(ch, func, help_string)`** - Register single-character hotkey
+  - `ch`: Character to trigger the hotkey
+  - `func`: Callable object accepting no arguments (use `functools.partial` if needed)
+  - `help_string`: Description shown in `:shortcuts` output
+  - Returns: None
+  - Internal calls: None
+
+- **`GetCharLoop._chfunc_dict_update(obj)`** - Bulk update hotkey mappings
+  - `obj`: List of tuples or dict containing (character, (function, help_text)) mappings
+  - Returns: None
+  - Internal calls: None
