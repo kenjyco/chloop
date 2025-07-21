@@ -24,7 +24,7 @@ class GetCharLoop(object):
         - the method for the `:command` should only accept `*args`
     - '-' to allow user to provide input that will be processed by the `input_hook`
     - '?' to show class doc and the startup message
-    - '??' to show class doc,  the startup message, docstrings (:commands), and shortcuts
+    - '??' to show class doc, the startup message, docstrings (:commands), and shortcuts
     """
     _startup_message = ':docstrings to see all colon commands\n:shortcuts to see all hotkeys\n'
 
