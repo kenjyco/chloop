@@ -9,14 +9,14 @@ with open('requirements.txt', 'r') as fp:
 
 setup(
     name='chloop',
-    version='0.2.23',
+    version='0.2.24',
     description='A Redis-backed REPL that saves command history, output, & errors',
     long_description=long_description,
     author='Ken',
     author_email='kenjyco@gmail.com',
     license='MIT',
     url='https://github.com/kenjyco/chloop',
-    download_url='https://github.com/kenjyco/chloop/tarball/v0.2.23',
+    download_url='https://github.com/kenjyco/chloop/tarball/v0.2.24',
     packages=find_packages(),
     install_requires=requirements,
     classifiers=[
